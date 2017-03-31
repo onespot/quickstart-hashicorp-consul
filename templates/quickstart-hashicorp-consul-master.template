@@ -396,5 +396,50 @@
                 }
             }
         }
+      }
+    },
+    "Outputs": {
+      "VPCStackRef": {
+        "Value": { "Ref" : "VPCStack" }
+      },
+      "VPCID": {
+        "Value": {
+          "Fn::GetAtt": [
+            "VPCStack",
+            "Outputs.VPCID"
+          ]
+        },
+        "Description": "Consul Seed VPC"
+      },
+      "HashiCorpConsulStackRef": {
+        "Value" : { "Ref" : "HashiCorpConsulStack" }
+      },
+      "ConsulSeedPrivateIP": {
+        "Value": {
+          "Fn::GetAtt": [
+            "HashiCorpConsulStack",
+            "Outputs.ConsulSeedPrivateIP"
+          ]
+        },
+        "Description": "Consul Seed PrivateIp"
+      },
+      "ConsulSeedPublicIP": {
+        "Value": {
+          "Fn::GetAtt": [
+            "HashiCorpConsulStack",
+            "Outputs.ConsulSeedPublicIP"
+          ]
+        },
+        "Description": "Consul Seed PublicIp"
+      },
+      "ConsulSecGroupName": {
+        "Value": {
+          "Fn::GetAtt": [
+            "HashiCorpConsulStack",
+            "Outputs.ConsulSecGroupName"
+          ]
+        },
+        "Description": "Consul Security Group"
+      }
     }
 }
