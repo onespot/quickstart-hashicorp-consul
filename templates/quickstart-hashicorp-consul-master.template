@@ -409,7 +409,7 @@
             "Outputs.VPCID"
           ]
         },
-        "Description": "Consul Seed VPC"
+        "Description": "Consul VPC"
       },
       "HashiCorpConsulStackRef": {
         "Value" : { "Ref" : "HashiCorpConsulStack" }
