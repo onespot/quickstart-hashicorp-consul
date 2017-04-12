@@ -314,6 +314,25 @@
         },
         "ConsulServerLC": {
             "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Metadata": {
+                "AWS::CloudFormation::Authentication": {
+                    "S3AccessCreds": {
+                        "type": "S3",
+                        "roleName": {
+                            "Ref": "ConsulRole"
+                        },
+                        "buckets" : [{ "Ref" : "QSS3BucketName" }]
+                    }
+                },
+                "AWS::CloudFormation::Init" : {
+                    "config" : {
+                        "sources" : {
+                            "/etc/consul.d" : { "Fn::Join" : ["",
+                                ["https://s3.amazonaws.com/", { "Ref" : "QSS3BucketName" }, "/", { "Ref" : "QSS3KeyPrefix"}, "/ServerConfig.tar.gz"]] }
+                        }
+                    }
+                }
+            },
             "Properties": {
                 "InstanceType": {
                     "Ref": "ConsulInstanceType"
@@ -344,11 +363,22 @@
                         "Fn::Join": [
                             "",
                             [
-                                "#!/bin/bash\n",
+                                "#!/bin/bash -xe\n",
                                 "apt-get -y update\n",
                                 "#install the cfn-init tools\n",
                                 "apt-get install python-setuptools -y \n",
                                 "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+                                "/usr/local/bin/cfn-init -v ",
+                                "  --stack ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " --resource ConsulServerLC ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
                                 "CONSUL_BOOTSTRAP_FILE=consul_server_bootstrap.sh\n",
                                 "CONSUL_BOOTSTRAP=",
                                 {
@@ -391,6 +421,25 @@
         },
         "ConsulClientLC": {
             "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Metadata": {
+                "AWS::CloudFormation::Authentication": {
+                    "S3AccessCreds": {
+                        "type": "S3",
+                        "roleName": {
+                            "Ref": "ConsulRole"
+                        },
+                        "buckets" : [{ "Ref" : "QSS3BucketName" }]
+                    }
+                },
+                "AWS::CloudFormation::Init" : {
+                    "config" : {
+                        "sources" : {
+                            "/etc/consul.d" : { "Fn::Join" : ["",
+                                ["https://s3.amazonaws.com/", { "Ref" : "QSS3BucketName" }, "/", { "Ref" : "QSS3KeyPrefix"}, "/ClientConfig.tar.gz"]] }
+                        }
+                    }
+                }
+            },
             "Properties": {
                 "InstanceType": {
                     "Ref": "ConsulInstanceType"
@@ -421,11 +470,22 @@
                         "Fn::Join": [
                             "",
                             [
-                                "#!/bin/bash\n",
+                                "#!/bin/bash -xe\n",
                                 "apt-get -y update\n",
                                 "#install the cfn-init tools\n",
                                 "apt-get install python-setuptools\n",
                                 "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+                                "/usr/local/bin/cfn-init -v ",
+                                "  --stack ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " --resource ConsulClientLC ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
                                 "CONSUL_BOOTSTRAP_FILE=consul_client_bootstrap.sh\n",
                                 "CONSUL_BOOTSTRAP=",
                                 {
@@ -504,7 +564,17 @@
                             "Effect": "Allow",
                             "Action": "ec2:DescribeInstances",
                             "Resource": "*"
-                        }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": ["s3:ListBucket"],
+                            "Resource": [ { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref": "QSS3BucketName" } ]] } ]
+                         },
+                         {
+                            "Effect": "Allow",
+                            "Action": [ "s3:GetObject" ],
+                            "Resource": [ { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref": "QSS3BucketName" }, "/", { "Ref": "QSS3KeyPrefix" }, "/*" ]] } ]
+                         }
                     ]
                 },
                 "Roles": [
@@ -573,7 +643,17 @@
                                 "ec2:DescribeInstances"
                             ],
                             "Resource": "*"
-                        }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": ["s3:ListBucket"],
+                            "Resource": [ { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref": "QSS3BucketName" } ]] } ]
+                         },
+                         {
+                            "Effect": "Allow",
+                            "Action": [ "s3:GetObject" ],
+                            "Resource": [ { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref": "QSS3BucketName" }, "/", { "Ref": "QSS3KeyPrefix" }, "/*" ]] } ]
+                         }
                     ]
                 },
                 "Roles": [
