@@ -414,23 +414,14 @@
       "HashiCorpConsulStackRef": {
         "Value" : { "Ref" : "HashiCorpConsulStack" }
       },
-      "ConsulSeedPrivateIP": {
+      "ConsulServerAsg": {
         "Value": {
           "Fn::GetAtt": [
             "HashiCorpConsulStack",
-            "Outputs.ConsulSeedPrivateIP"
+            "Outputs.ConsulServerAsg"
           ]
         },
-        "Description": "Consul Seed PrivateIp"
-      },
-      "ConsulSeedPublicIP": {
-        "Value": {
-          "Fn::GetAtt": [
-            "HashiCorpConsulStack",
-            "Outputs.ConsulSeedPublicIP"
-          ]
-        },
-        "Description": "Consul Seed PublicIp"
+        "Description": "Consul Server Asg"
       },
       "ConsulSecGroupName": {
         "Value": {

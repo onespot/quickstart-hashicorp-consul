@@ -688,6 +688,11 @@
             },
             "Description": "The Amazon EC2 instance tag value to filter on when joining to other Consul nodes."
         },
+        "ConsulServerAsg": {
+            "Value": {
+                "Ref": "ConsulServerAsg"
+            }
+        },
         "ConsulSecGroupName": {
             "Value": { "Ref": "ConsulSecGroup" },
             "Description": "Consul Security Group"
