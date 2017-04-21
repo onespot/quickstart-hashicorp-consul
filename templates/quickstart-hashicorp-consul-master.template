@@ -411,6 +411,9 @@
         },
         "Description": "Consul VPC"
       },
+      "BastionStackRef": {
+        "Value" : { "Ref" : "BastionStack" }
+      },
       "HashiCorpConsulStackRef": {
         "Value" : { "Ref" : "HashiCorpConsulStack" }
       },
