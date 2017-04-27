@@ -426,11 +426,11 @@
         },
         "Description": "Consul Server Asg"
       },
-      "ConsulSecGroupName": {
+      "ConsulSecGroup": {
         "Value": {
           "Fn::GetAtt": [
             "HashiCorpConsulStack",
-            "Outputs.ConsulSecGroupName"
+            "Outputs.ConsulSecGroup"
           ]
         },
         "Description": "Consul Security Group"

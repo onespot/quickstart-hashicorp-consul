@@ -693,8 +693,8 @@
                 "Ref": "ConsulServerAsg"
             }
         },
-        "ConsulSecGroupName": {
-            "Value": { "Ref": "ConsulSecGroup" },
+        "ConsulSecGroup": {
+            "Value": { "Fn::GetAtt" : ["ConsulSecGroup", "GroupId"] },
             "Description": "Consul Security Group"
         }
     }
