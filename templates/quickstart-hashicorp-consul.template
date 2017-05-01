@@ -680,22 +680,42 @@
             "Value": {
                 "Ref": "ConsulEc2RetryTagKey"
             },
-            "Description": "The Amazon EC2 instance tag key to filter on when joining to other Consul nodes."
+            "Description": "The Amazon EC2 instance tag key to filter on when joining to other Consul nodes.",
+            "Export": {
+                "Name": {
+                    "Fn::Sub": "${AWS::StackName}-ConsulEc2RetryTagKey"
+                }
+            }
         },
         "ConsulEc2RetryTagValue": {
             "Value": {
                 "Ref": "AWS::StackName"
             },
-            "Description": "The Amazon EC2 instance tag value to filter on when joining to other Consul nodes."
+            "Description": "The Amazon EC2 instance tag value to filter on when joining to other Consul nodes.",
+            "Export": {
+                "Name": {
+                    "Fn::Sub": "${AWS::StackName}-ConsulEc2RetryTagValue"
+                }
+            }
         },
         "ConsulServerAsg": {
             "Value": {
                 "Ref": "ConsulServerAsg"
+            },
+            "Export": {
+                "Name": {
+                    "Fn::Sub": "${AWS::StackName}-ConsulServerAsg"
+                }
             }
         },
-        "ConsulSecGroup": {
+        "ConsulSecGroupId": {
             "Value": { "Fn::GetAtt" : ["ConsulSecGroup", "GroupId"] },
-            "Description": "Consul Security Group"
+            "Description": "Consul Security Group",
+            "Export": {
+                "Name": {
+                    "Fn::Sub": "${AWS::StackName}-ConsulSecGroupId"
+                }
+            }
         }
     }
 }
