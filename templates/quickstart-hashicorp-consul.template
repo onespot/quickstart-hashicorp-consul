@@ -349,14 +349,14 @@
                                     "init_config:\n",
                                     "\n",
                                     "instances:\n",
-                                    "   url: http://localhost:8500\n",
-                                    "   ca_bundle_file: '/etc/consul.d/ssl/ca.cert'\n",
-                                    "   client_cert_file: '/etc/consul.d/ssl/consul.cert'\n",
-                                    "   private_cert_file: '/etc/consul.d/ssl/consul.key'\n",
-                                    "   catalog_checks: yes\n",
-                                    "   self_leader_check: yes\n",
-                                    "   new_leader_checks: yes\n",
-                                    "   network_latency_checks: yes\n",
+                                    "   - url: http://localhost:8500\n",
+                                    "     ca_bundle_file: '/etc/consul.d/ssl/ca.cert'\n",
+                                    "     client_cert_file: '/etc/consul.d/ssl/consul.cert'\n",
+                                    "     private_cert_file: '/etc/consul.d/ssl/consul.key'\n",
+                                    "     catalog_checks: yes\n",
+                                    "     self_leader_check: yes\n",
+                                    "     new_leader_checks: no\n",
+                                    "     network_latency_checks: yes\n",
                                     "\n"
                                 ]]}
                             }
