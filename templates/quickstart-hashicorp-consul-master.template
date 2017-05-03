@@ -85,6 +85,10 @@
         }
     },
     "Parameters": {
+        "DatadogApiKey": {
+            "Description": "API Key required to authenticate with Datadog.",
+            "Type": "String"
+        },
         "AvailabilityZones": {
             "Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved (3 AZs are used for this deployment)",
             "Type": "List<AWS::EC2::AvailabilityZone::Name>"
@@ -303,6 +307,9 @@
                     "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/quickstart-hashicorp-consul.template"
                 },
                 "Parameters": {
+                    "DatadogApiKey": {
+                        "Ref": "DatadogApiKey"
+                    },
                     "BastionSecurityGroupID": {
                         "Fn::GetAtt": [
                             "BastionStack",

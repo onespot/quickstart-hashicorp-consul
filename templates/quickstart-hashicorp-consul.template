@@ -2,6 +2,10 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "HashiCorp Consul License: Apache 2.0 (Please do not remove) May,11,2017 QS(0036)",
     "Parameters": {
+        "DatadogApiKey": {
+            "Description": "API Key required to authenticate with Datadog.",
+            "Type": "String"
+        },
         "BastionSecurityGroupID": {
             "Description": "ID of the bastion host security group to enable SSH connections (e.g., sg-7f16e910)",
             "Type": "AWS::EC2::SecurityGroup::Id"
@@ -329,6 +333,48 @@
                         "sources" : {
                             "/etc/consul.d" : { "Fn::Join" : ["",
                                 ["https://s3.amazonaws.com/", { "Ref" : "QSS3BucketName" }, "/", { "Ref" : "QSS3KeyPrefix"}, "/ServerConfig.tar.gz"]] }
+                        },
+                        "files" : {
+                            "/etc/dd-agent/datadog.conf" : {
+                                "content" : { "Fn::Join" : ["", [
+                                    "[Main]\n",
+                                    "\n",
+                                    "dd_url: https://app.datadoghq.com\n",
+                                    "api_key:", { "Ref" : "DatadogApiKey" }, "\n",
+                                    "collect_ec2_tags: yes\n"
+                                ]]}
+                            },
+                            "/etc/dd-agent/conf.d/consul.yaml": {
+                                "content" : { "Fn::Join" : ["", [
+                                    "init_config:\n",
+                                    "\n",
+                                    "instances:\n",
+                                    "   url: http://localhost:8500\n",
+                                    "   ca_bundle_file: '/etc/consul.d/ssl/ca.cert'\n",
+                                    "   client_cert_file: '/etc/consul.d/ssl/consul.cert'\n",
+                                    "   private_cert_file: '/etc/consul.d/ssl/consul.key'\n",
+                                    "   catalog_checks: yes\n",
+                                    "   self_leader_check: yes\n",
+                                    "   new_leader_checks: yes\n",
+                                    "   network_latency_checks: yes\n",
+                                    "\n"
+                                ]]}
+                            }
+                        },
+                        "packages" : {
+                            "apt" : {
+                                "datadog-agent" : []
+                            }
+                        },
+                        "services" : {
+                            "sysvinit" : {
+                                "datadog-agent" : {
+                                    "enabled" : "true",
+                                    "ensureRunning" : "true",
+                                    "files" : ["/etc/dd-agent/datadog.conf"],
+                                    "packages" : { "apt" : ["datadog-agent"] }
+                                }
+                            }
                         }
                     }
                 }
@@ -366,8 +412,11 @@
                                 "#!/bin/bash -xe\n",
                                 "apt-get -y update\n",
                                 "#install the cfn-init tools\n",
-                                "apt-get install python-setuptools -y \n",
+                                "apt-get install python-setuptools apt-transport-https -y \n",
                                 "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+                                "sh -c \"echo 'deb https://apt.datadoghq.com/ stable main' > /etc/apt/sources.list.d/datadog.list\"\n",
+                                "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C7A7DA52\n",
+                                "apt-get -y update\n",
                                 "/usr/local/bin/cfn-init -v ",
                                 "  --stack ",
                                 {
@@ -436,6 +485,48 @@
                         "sources" : {
                             "/etc/consul.d" : { "Fn::Join" : ["",
                                 ["https://s3.amazonaws.com/", { "Ref" : "QSS3BucketName" }, "/", { "Ref" : "QSS3KeyPrefix"}, "/ClientConfig.tar.gz"]] }
+                        },
+                        "files" : {
+                            "/etc/dd-agent/datadog.conf" : {
+                                "content" : { "Fn::Join" : ["", [
+                                    "[Main]\n",
+                                    "\n",
+                                    "dd_url: https://app.datadoghq.com\n",
+                                    "api_key:", { "Ref" : "DatadogApiKey" }, "\n",
+                                    "collect_ec2_tags: yes\n"
+                                ]]}
+                            },
+                            "/etc/dd-agent/conf.d/consul.yaml": {
+                                "content" : { "Fn::Join" : ["", [
+                                    "init_config:\n",
+                                    "\n",
+                                    "instances:\n",
+                                    "   url: http://localhost:8500\n",
+                                    "   ca_bundle_file: '/etc/consul.d/ssl/ca.cert'\n",
+                                    "   client_cert_file: '/etc/consul.d/ssl/consul.cert'\n",
+                                    "   private_cert_file: '/etc/consul.d/ssl/consul.key'\n",
+                                    "   catalog_checks: yes\n",
+                                    "   self_leader_check: yes\n",
+                                    "   new_leader_checks: yes\n",
+                                    "   network_latency_checks: yes\n",
+                                    "\n"
+                                ]]}
+                            }
+                        },
+                        "packages" : {
+                            "apt" : {
+                                "datadog-agent" : []
+                            }
+                        },
+                        "services" : {
+                            "sysvinit" : {
+                                "datadog-agent" : {
+                                    "enabled" : "true",
+                                    "ensureRunning" : "true",
+                                    "files" : ["/etc/dd-agent/datadog.conf"],
+                                    "packages" : { "apt" : ["datadog-agent"] }
+                                }
+                            }
                         }
                     }
                 }
@@ -473,8 +564,11 @@
                                 "#!/bin/bash -xe\n",
                                 "apt-get -y update\n",
                                 "#install the cfn-init tools\n",
-                                "apt-get install python-setuptools\n",
+                                "apt-get install python-setuptools apt-transport-https -y\n",
                                 "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+                                "sh -c \"echo 'deb https://apt.datadoghq.com/ stable main' > /etc/apt/sources.list.d/datadog.list\"\n",
+                                "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C7A7DA52\n",
+                                "apt-get -y update\n",
                                 "/usr/local/bin/cfn-init -v ",
                                 "  --stack ",
                                 {
