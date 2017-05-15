@@ -265,6 +265,8 @@
                     "Fn::Sub": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}submodules/quickstart-linux-bastion/templates/linux-bastion.template"
                 },
                 "Parameters": {
+                    "EnableTCPForwarding": "true",
+                    "NumBastionHosts": 2,
                     "BastionAMIOS": "Ubuntu-Server-16.04-LTS-HVM",
                     "KeyPairName": {
                         "Ref": "KeyPairName"
