@@ -89,6 +89,11 @@
             "Description": "API Key required to authenticate with Datadog.",
             "Type": "String"
         },
+        "NumBastionHosts": {
+            "Description": "Number of bastion hosts",
+            "Type": "String",
+            "Default": "1"
+        },
         "AvailabilityZones": {
             "Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved (3 AZs are used for this deployment)",
             "Type": "List<AWS::EC2::AvailabilityZone::Name>"
@@ -266,7 +271,9 @@
                 },
                 "Parameters": {
                     "EnableTCPForwarding": "true",
-                    "NumBastionHosts": 2,
+                    "NumBastionHosts": {
+                        "Ref" : "NumBastionHosts"
+                    },
                     "BastionAMIOS": "Ubuntu-Server-16.04-LTS-HVM",
                     "KeyPairName": {
                         "Ref": "KeyPairName"
@@ -405,44 +412,49 @@
                 }
             }
         }
-      }
     },
     "Outputs": {
-      "VPCStackRef": {
-        "Value": { "Ref" : "VPCStack" }
-      },
-      "VPCID": {
-        "Value": {
-          "Fn::GetAtt": [
-            "VPCStack",
-            "Outputs.VPCID"
-          ]
+        "VPCStackRef": {
+            "Value": {
+                "Ref": "VPCStack"
+            }
         },
-        "Description": "Consul VPC"
-      },
-      "BastionStackRef": {
-        "Value" : { "Ref" : "BastionStack" }
-      },
-      "HashiCorpConsulStackRef": {
-        "Value" : { "Ref" : "HashiCorpConsulStack" }
-      },
-      "ConsulServerAsg": {
-        "Value": {
-          "Fn::GetAtt": [
-            "HashiCorpConsulStack",
-            "Outputs.ConsulServerAsg"
-          ]
+        "VPCID": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "VPCStack",
+                    "Outputs.VPCID"
+                ]
+            },
+            "Description": "Consul VPC"
         },
-        "Description": "Consul Server Asg"
-      },
-      "ConsulSecGroupId": {
-        "Value": {
-          "Fn::GetAtt": [
-            "HashiCorpConsulStack",
-            "Outputs.ConsulSecGroupId"
-          ]
+        "BastionStackRef": {
+            "Value": {
+                "Ref": "BastionStack"
+            }
         },
-        "Description": "Consul Security Group"
-      }
+        "HashiCorpConsulStackRef": {
+            "Value": {
+                "Ref": "HashiCorpConsulStack"
+            }
+        },
+        "ConsulServerAsg": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "HashiCorpConsulStack",
+                    "Outputs.ConsulServerAsg"
+                ]
+            },
+            "Description": "Consul Server Asg"
+        },
+        "ConsulSecGroupId": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "HashiCorpConsulStack",
+                    "Outputs.ConsulSecGroupId"
+                ]
+            },
+            "Description": "Consul Security Group"
+        }
     }
 }
