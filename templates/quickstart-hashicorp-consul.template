@@ -475,7 +475,7 @@
                     "S3AccessCreds": {
                         "type": "S3",
                         "roleName": {
-                            "Ref": "ConsulRole"
+                            "Ref": "ConsulClientRole"
                         },
                         "buckets" : [{ "Ref" : "QSS3BucketName" }]
                     }
