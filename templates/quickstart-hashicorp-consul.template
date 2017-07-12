@@ -331,10 +331,25 @@
                 "AWS::CloudFormation::Init" : {
                     "config" : {
                         "sources" : {
+                            "/home/ubuntu" : "http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip",
                             "/etc/consul.d" : { "Fn::Join" : ["",
                                 ["https://s3.amazonaws.com/", { "Ref" : "QSS3BucketName" }, "/", { "Ref" : "QSS3KeyPrefix"}, "ServerConfig.tar.gz"]] }
                         },
                         "files" : {
+                            "/var/spool/cron/crontabs/ubuntu" : {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "*/5 * * * * ~/aws-scripts-mon/mon-put-instance-data.pl --mem-util --from-cron",
+                                            "\n"
+                                        ]
+                                    ]
+                                },
+                                "group": "crontab",
+                                "mode": "000600",
+                                "owner": "ubuntu"
+                            },
                             "/etc/dd-agent/datadog.conf" : {
                                 "content" : { "Fn::Join" : ["", [
                                     "[Main]\n",
@@ -363,6 +378,9 @@
                         },
                         "packages" : {
                             "apt" : {
+                                "unzip" : [],
+                                "libwww-perl" : [],
+                                "libdatetime-perl" : [],
                                 "datadog-agent" : []
                             }
                         },
@@ -483,10 +501,25 @@
                 "AWS::CloudFormation::Init" : {
                     "config" : {
                         "sources" : {
+                            "/home/ubuntu" : "http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip",
                             "/etc/consul.d" : { "Fn::Join" : ["",
                                 ["https://s3.amazonaws.com/", { "Ref" : "QSS3BucketName" }, "/", { "Ref" : "QSS3KeyPrefix"}, "ClientConfig.tar.gz"]] }
                         },
                         "files" : {
+                            "/var/spool/cron/crontabs/ubuntu" : {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "*/5 * * * * ~/aws-scripts-mon/mon-put-instance-data.pl --mem-util --from-cron",
+                                            "\n"
+                                        ]
+                                    ]
+                                },
+                                "group": "crontab",
+                                "mode": "000600",
+                                "owner": "ubuntu"
+                            },
                             "/etc/dd-agent/datadog.conf" : {
                                 "content" : { "Fn::Join" : ["", [
                                     "[Main]\n",
@@ -656,7 +689,13 @@
                     "Statement": [
                         {
                             "Effect": "Allow",
-                            "Action": "ec2:DescribeInstances",
+                            "Action": [
+                                "ec2:DescribeInstances",
+                                "ec2:DescribeTags",
+                                "cloudwatch:PutMetricData",
+                                "cloudwatch:GetMetricStatistics",
+                                "cloudwatch:ListMetrics"
+                            ],
                             "Resource": "*"
                         },
                         {
@@ -734,7 +773,11 @@
                         {
                             "Effect": "Allow",
                             "Action": [
-                                "ec2:DescribeInstances"
+                                "ec2:DescribeInstances",
+                                "ec2:DescribeTags",
+                                "cloudwatch:PutMetricData",
+                                "cloudwatch:GetMetricStatistics",
+                                "cloudwatch:ListMetrics"
                             ],
                             "Resource": "*"
                         },
