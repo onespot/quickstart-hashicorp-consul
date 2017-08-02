@@ -385,7 +385,7 @@
                                 ["https://s3.amazonaws.com/", { "Ref" : "QSS3BucketName" }, "/", { "Ref" : "QSS3KeyPrefix"}, "ServerConfig.tar.gz"]] }
                         },
                         "files" : {
-                            "/opt/aws-ec2-user/install.sh": {
+                            "/opt/aws-ec2-ssh/install.sh": {
                                 "source": "https://raw.githubusercontent.com/onespot/aws-ec2-ssh/onespot-master/install.sh",
                                 "mode": "000550",
                                 "owner": "root",
@@ -571,7 +571,7 @@
                                 ["https://s3.amazonaws.com/", { "Ref" : "QSS3BucketName" }, "/", { "Ref" : "QSS3KeyPrefix"}, "ClientConfig.tar.gz"]] }
                         },
                         "files" : {
-                            "/opt/aws-ec2-user/install.sh": {
+                            "/opt/aws-ec2-ssh/install.sh": {
                                 "source": "https://raw.githubusercontent.com/onespot/aws-ec2-ssh/onespot-master/install.sh",
                                 "mode": "000550",
                                 "owner": "root",
