@@ -571,6 +571,12 @@
                                 ["https://s3.amazonaws.com/", { "Ref" : "QSS3BucketName" }, "/", { "Ref" : "QSS3KeyPrefix"}, "ClientConfig.tar.gz"]] }
                         },
                         "files" : {
+                            "/opt/aws-ec2-user/install.sh": {
+                                "source": "https://raw.githubusercontent.com/onespot/aws-ec2-ssh/onespot-master/install.sh",
+                                "mode": "000550",
+                                "owner": "root",
+                                "group": "root"
+                            },
                             "/var/spool/cron/crontabs/ubuntu" : {
                                 "content": {
                                     "Fn::Join": [
@@ -613,7 +619,20 @@
                         },
                         "packages" : {
                             "apt" : {
+                                "git" : [],
+                                "jq" : [],
+                                "unzip" : [],
+                                "libwww-perl" : [],
+                                "libdatetime-perl" : [],
                                 "datadog-agent" : []
+                            }
+                        },
+                        "commands": {
+                            "a-install": {
+                                "command": {
+                                    "Fn::Sub": "./install.sh -a \"${AssumeRole}\" -i \"${AuthorizedIamGroups}\" -s \"${AuthorizedSudoerGroups}\""
+                                },
+                                "cwd": "/opt/aws-ec2-ssh"
                             }
                         },
                         "services" : {
