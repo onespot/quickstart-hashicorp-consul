@@ -21,10 +21,6 @@
             "Description": "API Key required to authenticate with Datadog.",
             "Type": "String"
         },
-        "BastionSecurityGroupID": {
-            "Description": "ID of the bastion host security group to enable SSH connections (e.g., sg-7f16e910)",
-            "Type": "AWS::EC2::SecurityGroup::Id"
-        },
         "ConsulInstanceType": {
             "Type": "String",
             "Description": "Consul node instance type",
@@ -240,14 +236,6 @@
                     "Ref": "VPCID"
                 },
                 "SecurityGroupIngress": [
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "22",
-                        "ToPort": "22",
-                        "SourceSecurityGroupId": {
-                            "Ref": "BastionSecurityGroupID"
-                        }
-                    },
                     {
                         "IpProtocol": "tcp",
                         "FromPort": "0",
