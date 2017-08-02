@@ -2,6 +2,21 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "HashiCorp Consul License: Apache 2.0 (Please do not remove) May,11,2017 QS(0036)",
     "Parameters": {
+        "AssumeRole": {
+            "Type": "String",
+            "Description": "Optional IAM role ARN to assume to get the IAM users from another account",
+            "Default": ""
+        },
+        "AuthorizedIamGroups" : {
+            "Default": "",
+            "Description": "Comma separate IAM groups whose users will be given SSH access.",
+            "Type": "String"
+        },
+        "AuthorizedSudoerGroups" : {
+            "Default": "",
+            "Description": "Comma separated IAM groups whose users will be given sudo access.",
+            "Type": "String"
+        },
         "DatadogApiKey": {
             "Description": "API Key required to authenticate with Datadog.",
             "Type": "String"
@@ -182,6 +197,40 @@
             }
         }
     },
+    "Conditions": {
+        "UseCrossAccountIAM": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "AssumeRole"
+                        },
+                        ""
+                    ]
+                }
+            ]
+        },
+        "UseLocalIAM": {
+            "Fn::Equals": [
+                {
+                    "Ref": "AssumeRole"
+                },
+                ""
+            ]
+        },
+        "HasKeyName": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "KeyPair"
+                        },
+                        ""
+                    ]
+                }
+            ]
+        }
+    },
     "Resources": {
         "ConsulSecGroup": {
             "Type": "AWS::EC2::SecurityGroup",
@@ -336,6 +385,12 @@
                                 ["https://s3.amazonaws.com/", { "Ref" : "QSS3BucketName" }, "/", { "Ref" : "QSS3KeyPrefix"}, "ServerConfig.tar.gz"]] }
                         },
                         "files" : {
+                            "/opt/aws-ec2-user/install.sh": {
+                                "source": "https://raw.githubusercontent.com/onespot/aws-ec2-ssh/onespot-master/install.sh",
+                                "mode": "000550",
+                                "owner": "root",
+                                "group": "root"
+                            },
                             "/var/spool/cron/crontabs/ubuntu" : {
                                 "content": {
                                     "Fn::Join": [
@@ -378,10 +433,20 @@
                         },
                         "packages" : {
                             "apt" : {
+                                "git" : [],
+                                "jq" : [],
                                 "unzip" : [],
                                 "libwww-perl" : [],
                                 "libdatetime-perl" : [],
                                 "datadog-agent" : []
+                            }
+                        },
+                        "commands": {
+                            "a-install": {
+                                "command": {
+                                    "Fn::Sub": "./install.sh -a \"${AssumeRole}\" -i \"${AuthorizedIamGroups}\" -s \"${AuthorizedSudoerGroups}\""
+                                },
+                                "cwd": "/opt/aws-ec2-ssh"
                             }
                         },
                         "services" : {
@@ -643,6 +708,76 @@
                         ]
                     }
                 }
+            }
+        },
+        "CrossAccountRolePolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Condition": "UseCrossAccountIAM",
+            "Properties": {
+                "PolicyName": "crossaccountiam",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": "sts:AssumeRole",
+                            "Resource": {
+                                "Ref": "AssumeRole"
+                            }
+                        }
+                    ]
+                },
+                "Roles": [
+                    {
+                        "Ref": "ConsulClientRole"
+                    },
+                    {
+                        "Ref": "ConsulServerRole"
+                    }
+                ]
+            }
+        },
+        "LocalRolePolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Condition": "UseLocalIAM",
+            "Properties": {
+                "PolicyName": "iam",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "iam:ListUsers",
+                                "iam:GetGroup"
+                            ],
+                            "Resource": "*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "iam:ListSSHPublicKeys",
+                                "iam:GetSSHPublicKey"
+                            ],
+                            "Resource": {
+                                "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:user/*"
+                            }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": "ec2:DescribeTags",
+                            "Resource": "*"
+                        }
+                    ]
+                },
+                "Roles": [
+                    {
+                        "Ref": "ConsulClientRole"
+                    },
+                    {
+                        "Ref": "ConsulServerRole"
+                    }
+                ]
             }
         },
         "ConsulClientRole": {
