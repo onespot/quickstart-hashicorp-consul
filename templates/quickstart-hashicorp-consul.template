@@ -400,7 +400,10 @@
                                     "dd_url: https://app.datadoghq.com\n",
                                     "api_key:", { "Ref" : "DatadogApiKey" }, "\n",
                                     "collect_ec2_tags: yes\n"
-                                ]]}
+                                ]]},
+                                "group": "dd-agent",
+                                "mode": "000644",
+                                "owner": "dd-agent"
                             },
                             "/etc/dd-agent/conf.d/consul.yaml": {
                                 "content" : { "Fn::Join" : ["", [
