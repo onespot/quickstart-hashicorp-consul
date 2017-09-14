@@ -21,6 +21,15 @@
             "Description": "API Key required to authenticate with Datadog.",
             "Type": "String"
         },
+        "DatadogEnabled": {
+            "Description": "Enable datadog monitoring",
+            "Type": "String",
+            "AllowedValues": [
+                "true",
+                "false"
+            ],
+            "Default": "false"
+        },
         "ConsulInstanceType": {
             "Type": "String",
             "Description": "Consul node instance type",
@@ -443,8 +452,8 @@
                         "services" : {
                             "sysvinit" : {
                                 "datadog-agent" : {
-                                    "enabled" : "true",
-                                    "ensureRunning" : "true",
+                                    "enabled" : { "Ref": "DatadogEnabled" },
+                                    "ensureRunning" : { "Ref": "DatadogEnabled" },
                                     "files" : ["/etc/dd-agent/datadog.conf"],
                                     "packages" : { "apt" : ["datadog-agent"] }
                                 }

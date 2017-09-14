@@ -121,15 +121,24 @@ DATADIR="${CONSULDIR}/data"
 CONSULCONFIGDIR='/etc/consul.d'
 CONSULDOWNLOAD="https://releases.hashicorp.com/consul/${CONSULVERSION}/consul_${CONSULVERSION}_linux_amd64.zip"
 CONSUL_TEMPLATE_DOWNLOAD="https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VERSION}/consul-template_${CONSUL_TEMPLATE_VERSION}_linux_amd64.zip"
-CONSUL_SERVICE_CONF="${S3SCRIPT_PATH}/consul.service"
-CONSUL_SERVICE_FILE="/etc/systemd/system/consul.service"
+if [[ `which apt-get` ]]; then
+    CONSUL_SERVICE_CONF="${S3SCRIPT_PATH}/consul.service"
+    CONSUL_SERVICE_FILE="/etc/systemd/system/consul.service"
+elif [[ `which yum` ]]; then
+    CONSUL_SERVICE_CONF="${S3SCRIPT_PATH}/consul.init"
+    CONSUL_SERVICE_FILE="/etc/init.d/consul"
+else
+    echo "Script [FAILED]" >&2
+    exit 1
+fi
 
 echo "Updating package list..."
-apt-get -y update
+[ `which apt-get` ] && apt-get -y update || [ `which yum` ]
 chkstatus
 
 echo "Installing dependencies..."
-apt-get -y install curl unzip
+[ `which apt-get` ] && apt-get -y install curl unzip
+[ `which yum` ] && yum -y install curl unzip
 chkstatus
 
 echo "Creating Consul Directories"
@@ -143,14 +152,14 @@ chmod 755 $CONFIGDIR
 chmod 755 $DATADIR
 
 echo "Installing Consul Template..."
-curl -L $CONSUL_TEMPLATE_DOWNLOAD > /tmp/consul_template.zip
+curl --retry 2 -L $CONSUL_TEMPLATE_DOWNLOAD > /tmp/consul_template.zip
 unzip  /tmp/consul_template.zip -d ${BINDIR}/
 chmod 0755 ${BINDIR}/consul-template
 chown root:root ${BINDIR}/consul-template
 chkstatus
 
 echo "Installing Consul..."
-curl -L $CONSULDOWNLOAD > /tmp/consul.zip
+curl --retry 2 -L $CONSULDOWNLOAD > /tmp/consul.zip
 unzip  /tmp/consul.zip -d ${BINDIR}/
 chmod 0755 ${BINDIR}/consul
 chown root:root ${BINDIR}/consul
@@ -170,12 +179,15 @@ service consul start
 chkstatus
 
 echo "Installing Dnsmasq..."
-apt-get -qq -y install dnsmasq-base dnsmasq
+[ `which apt-get` ] && apt-get -qq -y install dnsmasq-base dnsmasq
+[ `which yum` ] && yum -y install dnsmasq
 
 echo "Configuring Dnsmasq..."
+sed -i "s:#conf-dir=/etc/dnsmasq.d:conf-dir=/etc/dnsmasq.d:" /etc/dnsmasq.conf
 sh -c 'echo "server=/consul/127.0.0.1#8600" >> /etc/dnsmasq.d/consul'
 sh -c 'echo "listen-address=127.0.0.1" >> /etc/dnsmasq.d/consul'
 sh -c 'echo "bind-interfaces" >> /etc/dnsmasq.d/consul'
+[ `which dhclient` ] && sh -c 'echo "prepend domain-name-servers 127.0.0.1;" >> /etc/dhcp/dhclient.conf' && service network restart
 
 echo "Restarting dnsmasq..."
 service dnsmasq restart
