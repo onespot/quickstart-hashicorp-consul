@@ -4,6 +4,7 @@
   "data_dir": "/opt/consul/data",
   "client_addr": "0.0.0.0",
   "bootstrap_expect": __BOOTSTRAP_EXPECT__,
+  "node_name": "__NODE_NAME__",
 
   "retry_join_ec2": {
     "tag_key": "__CONSUL_TAG_KEY__",

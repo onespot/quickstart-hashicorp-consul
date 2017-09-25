@@ -136,6 +136,7 @@ CONSULDOWNLOAD="https://releases.hashicorp.com/consul/${CONSULVERSION}/consul_${
 CONSUL_TEMPLATE_DOWNLOAD="https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VERSION}/consul-template_${CONSUL_TEMPLATE_VERSION}_linux_amd64.zip"
 CONSUL_SERVICE_CONF="${S3SCRIPT_PATH}/consul.service"
 CONSUL_SERVICE_FILE="/etc/systemd/system/consul.service"
+FQDN=$(hostname --fqdn)
 
 echo "Updating package list..."
 apt-get -y update
@@ -177,6 +178,7 @@ curl  -s ${S3SCRIPT_PATH}/consul_server_config.stub > ${CONSULCONFIGDIR}/server.
 sed -i "s/__BOOTSTRAP_EXPECT__/${CONSUL_EXPECT}/" ${CONSULCONFIGDIR}/server.json.tmp
 sed -i "s/__CONSUL_TAG_KEY__/${CONSUL_TAG_KEY}/" ${CONSULCONFIGDIR}/server.json.tmp
 sed -i "s/__CONSUL_TAG_VALUE__/${CONSUL_TAG_VALUE}/" ${CONSULCONFIGDIR}/server.json.tmp
+sed -i "s/__NODE_NAME__/${FQDN}" ${CONSULCONFIGDIR}/server.json.tmp
 mv ${CONSULCONFIGDIR}/server.json.tmp ${CONSULCONFIGDIR}/server.json
 
 echo "Starting Consul..."
