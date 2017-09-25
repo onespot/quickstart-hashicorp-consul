@@ -639,8 +639,8 @@
                         "services" : {
                             "sysvinit" : {
                                 "datadog-agent" : {
-                                    "enabled" : "true",
-                                    "ensureRunning" : "true",
+                                    "enabled" : { "Ref": "DatadogEnabled" },
+                                    "ensureRunning" : { "Ref": "DatadogEnabled" },
                                     "files" : ["/etc/dd-agent/datadog.conf"],
                                     "packages" : { "apt" : ["datadog-agent"] }
                                 }
