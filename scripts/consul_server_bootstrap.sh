@@ -178,7 +178,7 @@ curl  -s ${S3SCRIPT_PATH}/consul_server_config.stub > ${CONSULCONFIGDIR}/server.
 sed -i "s/__BOOTSTRAP_EXPECT__/${CONSUL_EXPECT}/" ${CONSULCONFIGDIR}/server.json.tmp
 sed -i "s/__CONSUL_TAG_KEY__/${CONSUL_TAG_KEY}/" ${CONSULCONFIGDIR}/server.json.tmp
 sed -i "s/__CONSUL_TAG_VALUE__/${CONSUL_TAG_VALUE}/" ${CONSULCONFIGDIR}/server.json.tmp
-sed -i "s/__NODE_NAME__/${FQDN}" ${CONSULCONFIGDIR}/server.json.tmp
+sed -i "s/__NODE_NAME__/${FQDN}/" ${CONSULCONFIGDIR}/server.json.tmp
 mv ${CONSULCONFIGDIR}/server.json.tmp ${CONSULCONFIGDIR}/server.json
 
 echo "Starting Consul..."

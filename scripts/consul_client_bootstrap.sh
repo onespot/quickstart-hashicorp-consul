@@ -173,7 +173,7 @@ chmod 755 ${CONSUL_SERVICE_FILE}
 curl  -s ${S3SCRIPT_PATH}/consul_client_config.json > ${CONSULCONFIGDIR}/client.json.tmp
 sed -i "s/__CONSUL_TAG_KEY__/${CONSUL_TAG_KEY}/" ${CONSULCONFIGDIR}/client.json.tmp
 sed -i "s/__CONSUL_TAG_VALUE__/${CONSUL_TAG_VALUE}/" ${CONSULCONFIGDIR}/client.json.tmp
-sed -i "s/__NODE_NAME__/${FQDN}" ${CONSULCONFIGDIR}/client.json.tmp
+sed -i "s/__NODE_NAME__/${FQDN}/" ${CONSULCONFIGDIR}/client.json.tmp
 mv ${CONSULCONFIGDIR}/client.json.tmp ${CONSULCONFIGDIR}/client.json
 
 echo "Starting Consul..."
