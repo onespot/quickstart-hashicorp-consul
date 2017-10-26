@@ -138,8 +138,7 @@ echo "Updating package list..."
 chkstatus
 
 echo "Installing dependencies..."
-[ `which apt-get` ] && apt-get -y install curl unzip
-[ `which yum` ] && yum -y install curl unzip
+[ `which apt-get` ] && apt-get -y install curl unzip || { [ `which yum` ] && yum -y install curl unzip; }
 chkstatus
 
 echo "Creating Consul Directories"
@@ -181,8 +180,7 @@ service consul start
 chkstatus
 
 echo "Installing Dnsmasq..."
-[ `which apt-get` ] && apt-get -qq -y install dnsmasq-base dnsmasq
-[ `which yum` ] && yum -y install dnsmasq
+[ `which apt-get` ] && apt-get -qq -y install dnsmasq-base dnsmasq || { [ `which yum` ] && yum -y install dnsmasq; }
 
 echo "Configuring Dnsmasq..."
 sed -i "s:#conf-dir=/etc/dnsmasq.d:conf-dir=/etc/dnsmasq.d:" /etc/dnsmasq.conf
