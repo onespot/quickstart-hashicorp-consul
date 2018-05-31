@@ -969,6 +969,26 @@
         }
     },
     "Outputs": {
+        "ConsulQSS3BucketName": {
+            "Value": {
+                "Ref": "QSS3BucketName"
+            },
+            "Export": {
+                "Name": {
+                    "Fn::Sub": "${AWS::StackName}-ConsulQSS3BucketName"
+                }
+            }
+        },
+        "ConsulQSS3KeyPrefix": {
+            "Value": {
+                "Ref": "QSS3KeyPrefix"
+            },
+            "Export": {
+                "Name": {
+                    "Fn::Sub": "${AWS::StackName}-ConsulQSS3KeyPrefix"
+                }
+            }
+        },
         "ConsulEc2RetryTagKey": {
             "Value": {
                 "Ref": "ConsulEc2RetryTagKey"
