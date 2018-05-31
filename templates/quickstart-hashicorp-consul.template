@@ -975,7 +975,7 @@
             },
             "Export": {
                 "Name": {
-                    "Fn::Sub": "${AWS::StackName}-ConsulQSS3BucketName"
+                    "Fn::Sub": "${AWS::StackName}-S3BucketName"
                 }
             }
         },
@@ -985,7 +985,7 @@
             },
             "Export": {
                 "Name": {
-                    "Fn::Sub": "${AWS::StackName}-ConsulQSS3KeyPrefix"
+                    "Fn::Sub": "${AWS::StackName}-S3KeyPrefix"
                 }
             }
         },
